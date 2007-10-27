@@ -2,26 +2,26 @@
 %img = imread('1925_senkrecht.bmp');
 %img = imread('0011_rot3.bmp');
 %img = imread('0011_gross.bmp');
-%img = imread('0011_rot_schlecht2.bmp');
+img = imread('0011_rot_schlecht2.bmp');
 %img = imread('0011_rot_schlecht3.bmp');
 %img = imread('0011_rot_schlecht.bmp');
 %img = imread('0011_rot2.bmp');
-img = imread('int25-1.bmp');
+%img = imread('int25-1.bmp');
 %img = imread('0011_senkrecht_aufkopf.bmp');
 %img = imread('0011_rot90.bmp');
 %img = imread('0011_rot270.bmp');
 
 figure(1)
+subplot(221)
 imshow(img, [])
+title('Originalbild')
+
 
 %TEST: verschmieren -> funktioniert bei den meisten nicht
 %gaussfilter mit sigma=1
-%gaussianfilter = fspecial('gaussian', [7,7], 1);
+gaussianfilter = fspecial('gaussian', [7,7], 1);
+img = imfilter(img, gaussianfilter, 'replicate');
 %img = imfilter(img, gaussianfilter, 'replicate');
-%img = imfilter(img, gaussianfilter, 'replicate');
-
-figure(2)
-imshow(img, [])
 
 %double konvertierung
 img = double(img);
@@ -31,8 +31,16 @@ img = imtograyscale(img);
 %------- 2. denoise -------------------------------------------------------
 img = imclean(img);
 
+subplot(222)
+imshow(img, [])
+title('Grayscale Bild, gefiltert')
+
 %------- 3. convert to binary ---------------------------------------------
 img = imconvert(img, 0.5);
+
+subplot(223)
+imshow(img, [])
+title('Binärbild')
 
 %bereich suchen
 
@@ -101,7 +109,8 @@ end
 % end
 %bc_vector
 %size(bc_vector)
-figure(3)
+subplot(224)
 imshow(img);
+title('Resultat mit Scanlinien')
 result
 
