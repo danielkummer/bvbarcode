@@ -1,5 +1,6 @@
 function [res_img] = imtograyscale(img)
-%Umwandlung in Graustufenbild
+% convert image to grayscaleimage
+
 [x,y,N] = size(img);
 if N>1
     res_img = (img(:,:,1) + img(:,:,2) + img(:,:,3));
@@ -8,4 +9,3 @@ if N>1
 else
     res_img = img;
 end
-%ende umwandlung
