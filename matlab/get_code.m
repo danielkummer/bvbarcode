@@ -5,25 +5,28 @@ res_vec = [];
 
 if len>1
     max_small = input_vec(2);
-    len = len - 2; %temp_vec ist kleiner
+    % temp_vec is smaller because the first and the last entrys don't belong
+    % to the code
+    len = len - 2; 
 
-    color = 1;  %anfangen mit schwarz
+    % start with black
+    color = 1;  
 
-    %kodiersymbole
-    % 1     weiss dünn
-    % 2     schwarz dünn
-    % 3     weiss dick
-    % 4     schwarz dick
+    % coding symbols
+    % 1     white narrow
+    % 2     black narrow
+    % 3     white wide
+    % 4     black wide
 
     for i=2:len+1
-        if(input_vec(i) < max_small * th) %schmaler balken
+        if(input_vec(i) < max_small * th) % narrow bar
             if(input_vec(i) > max_small)
                 max_small = input_vec(i);
             end
             res_vec = [res_vec, color+1];
-        else %breiter balken
+        else % wide bar
             res_vec = [res_vec, color+3];
         end
-       color = xor(color,1);
+       color = xor(color,1); % change color to white
     end
 end
