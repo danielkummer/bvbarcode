@@ -1,16 +1,18 @@
 %------- testimages --------------------------------------------------
-%img = imread('0011_rot_klein.bmp');
-%img = imread('1925_senkrecht.bmp');
-%img = imread('0011_rot3.bmp');
-%img = imread('0011_gross.bmp');
-img = imread('0011_rot_schlecht2.bmp');
-%img = imread('0011_rot_schlecht3.bmp');
-%img = imread('0011_rot_schlecht.bmp');
-%img = imread('0011_rot2.bmp');
-%img = imread('int25-1.bmp');
-%img = imread('0011_senkrecht_aufkopf.bmp');
-%img = imread('0011_rot90.bmp');
-%img = imread('0011_rot270.bmp');
+%img = imread('testimages/0011_rot_klein.bmp');
+%img = imread('testimages/1925_senkrecht.bmp');
+%img = imread('testimages/0011_rot3.bmp');
+%img = imread('testimages/0011_gross.bmp');
+%img = imread('testimages/0011_rot_schlecht2.bmp');
+%img = imread('testimages/0011_rot_schlecht3.bmp');
+%img = imread('testimages/0011_rot_schlecht.bmp');
+%img = imread('testimages/0011_rot2.bmp');
+%img = imread('testimages/int25-1.bmp');
+%img = imread('testimages/0011_senkrecht_aufkopf.bmp');
+%img = imread('testimages/0011_rot90.bmp');
+%img = imread('testimages/0011_rot270.bmp');
+
+img = imread('testimages/1925_horizontal.bmp');
 
 figure(1)
 subplot(221)
