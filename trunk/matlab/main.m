@@ -12,7 +12,9 @@
 %img = imread('testimages/0011_rot90.bmp');
 %img = imread('testimages/0011_rot270.bmp');
 
-img = imread('testimages/1925_horizontal.bmp');
+%img = imread('testimages/1925_horizontal.bmp');
+%img = imread('testimages/3476_rot_0.bmp');
+img = imread('testimages/3476_rot_110_small.bmp');
 
 figure(1)
 subplot(221)
@@ -75,6 +77,6 @@ end
 
 subplot(224)
 imshow(img);
-title('Resultat mit Scanlinien')
+title('Resultat')
 result
 
