@@ -2,28 +2,26 @@
 %img = imread('1925_senkrecht.bmp');
 %img = imread('0011_rot3.bmp');
 %img = imread('0011_gross.bmp');
-%%img = imread('0011_rot_schlecht2.bmp');
+%img = imread('0011_rot_schlecht2.bmp');
 %img = imread('0011_rot_schlecht3.bmp');
 %img = imread('0011_rot_schlecht.bmp');
 %img = imread('0011_rot2.bmp');
 img = imread('int25-1.bmp');
 %img = imread('0011_senkrecht_aufkopf.bmp');
-
 %img = imread('0011_rot90.bmp');
 %img = imread('0011_rot270.bmp');
 
 figure(1)
 imshow(img, [])
 
-%TEST: verschmieren
+%TEST: verschmieren -> funktioniert bei den meisten nicht
 %gaussfilter mit sigma=1
-gaussianfilter = fspecial('gaussian', [7,7], 1);
-img = imfilter(img, gaussianfilter, 'replicate');
+%gaussianfilter = fspecial('gaussian', [7,7], 1);
+%img = imfilter(img, gaussianfilter, 'replicate');
 %img = imfilter(img, gaussianfilter, 'replicate');
 
 figure(2)
 imshow(img, [])
-
 
 %double konvertierung
 img = double(img);
@@ -35,10 +33,9 @@ img = imclean(img);
 
 %------- 3. convert to binary ---------------------------------------------
 img = imconvert(img, 0.5);
+
 %bereich suchen
 
-
-%line_nr = 20;
 [w,h,N] = size(img);
 %accumulator = [];
 
@@ -82,16 +79,16 @@ lines = [int16(w/4), 1, int16(w/4), h ;
          1, int16(h/2), int16(w/2), 1;
          1, h, w, 1;
          ];
-[bc_vector, img] = pixelcount(img, lines(1, :) );
+%[bc_vector, img] = pixelcount(img, lines(1, :) );
 %[nx, ny] = size(bc_vector);
-line_nr = 1;
+%line_nr = 1;
+line_nr = 0;
 result = [-1];
 
-while  length(result)==1  && line_nr < 12  %nur 4 Ziffern -> anpassen um code dynamischer zu machen
+while  length(result)==1  && line_nr < 12
     line_nr = line_nr + 1;
 %------- 5. count pixel on scanline ---------------------------------------    
     [bc_vector, img] = pixelcount(img, lines(line_nr,:) );
-%    [nx, ny] = size(bc_vector);
 %------- 6. convert to code -----------------------------------------------
     code_vec = get_code(bc_vector, 1.6)
 %------- 7. decode code to numbers ----------------------------------------
