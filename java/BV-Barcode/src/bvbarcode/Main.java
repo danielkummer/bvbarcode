@@ -16,29 +16,49 @@ import img.*;
 public class Main {
     
     private static BarcodeProcessor bc;
+    
+    private static String parseResult(Integer[] res) {
+        StringBuilder s = new StringBuilder();
+        for(int i = 0; i < res.length; i++) {
+            s.append(res[i]);
+        }
+        return s.toString();
+    }
 
     public static void main(String[] args) {
         boolean running = true;
+        
+        Integer[] result;
 
         bc = BarcodeProcessor.getInstance();
         
+        ImgTextDisplay textDisp = new ImgTextDisplay(100, 100, 300,300);
+        
 	// instantiate image im1 and attach a frame grabber	
 	Img image = new Img(new ImgGrabber("preview"));
-        Img result = new Img(image.width, image.height, Img.GRAY);
-	// grab one frame to get size, etc. 
+        Img grayImage = new Img(image.width, image.height, Img.GRAY);
+        Img binImage  = new Img(image.width, image.height, Img.BINARY);
 	image.grabFrame();
-	// position the windows on the screen
         image.setSingleWindowDisplay(300,10);
-        result.setSingleWindowDisplay(350,350);
+        grayImage.setSingleWindowDisplay(350,350);
+        binImage.setSingleWindowDisplay(500,500);
  	
-	// start grabbing frames from the cam
 	while (running) {
 		// wait for 10ms (max 100 frames per sec)
 		Img.sleep(10);
     		image.grabFrame();
-                result = bc.ImgToGrayScale(image);
-                result.display();
-		image.display();
+                image.display();
+                
+                bc.ImgToGrayScale(image, grayImage);
+                bc.ImgClean(grayImage, binImage);
+                grayImage.display();
+                
+                binImage.gray2bin(128);
+                
+                result = bc.ReadBarCode(binImage);
+                textDisp.displayText(parseResult(result));
+                
+                binImage.display();
 	}
     }
 }
