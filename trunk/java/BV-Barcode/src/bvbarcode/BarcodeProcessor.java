@@ -44,13 +44,14 @@ public class BarcodeProcessor {
     //hautpfunktion
     public static Integer[] ReadBarCode(Img img) {
         int lineNr = 0;
-        int w = img.width;
-        int h = img.height;
+        //verkehrt?!?!?
+        int w = img.height - 1;
+        int h = img.width - 1;
         Integer[] bcVector;
         Integer[] codeVector;
         Integer[] result = null;
         
-        Line[] lines = {    new Line((int)(w/4), 0, (int)(w/4), h),
+        /*Line[] lines = {    new Line((int)(w/4), 0, (int)(w/4), h),
                             new Line((int)(w/2), 0, (int)(w/2), h),
                             new Line((int)(3*w/4), 0, (int)(3*w/4), h),
                             new Line(0, (int)(h/4), w, (int)(h/4)),
@@ -61,7 +62,11 @@ public class BarcodeProcessor {
                             new Line(0, (int)(h/2), (int)(w/2), h),
                             new Line((int)(w/2), h, w, (int)(h/2)),
                             new Line(0, (int)(h/2), (int)(w/2), 1),
-                            new Line(0, h, w, 0)};
+                            new Line(0, h, w, 0)};*/
+
+        Line[] lines = {    new Line((int)(w/2), 0, (int)(w/2), h)};
+                            
+               
         
         while(result == null && lineNr < lines.length) {
             bcVector = PixelCount(img, lines[lineNr]);
@@ -124,6 +129,9 @@ public class BarcodeProcessor {
                     pixcount = 1;
                     currentcolor = img.pix[nextRow][nextCol].c0;
                 }
+                // set it white to see the scanlines 
+                // TODO: remove this line in the final version
+                img.pix[nextRow-1][nextCol].c0 = 1;
             }
             bcVector.add(pixcount);
         } else {
@@ -144,6 +152,9 @@ public class BarcodeProcessor {
                     pixcount = 1;
                     currentcolor = img.pix[nextRow][nextCol].c0;
                 }
+                // set it white to see the scanlines 
+                // TODO: remove this line in the final version
+                img.pix[nextRow-1][nextCol].c0 = 1;
             }
             bcVector.add(pixcount);
         }
@@ -158,10 +169,10 @@ public class BarcodeProcessor {
              
         //andere bedingung.... (return erst danach) nicht schön
         if (vector.length > 1 ) {
-            maxSmall = vector[1];
+            maxSmall = vector[2];
             //temp_vec is smaller because the first and the last entrys don't belong
             //to the code
-            len = vector.length - 2; 
+            len = vector.length - 4; 
 
             //start with black
             color = 1;  
@@ -171,7 +182,7 @@ public class BarcodeProcessor {
             //2     black narrow
             //3     white wide
             //4     black wide
-            for(int i = 1; i < len+1; i++) {
+            for(int i = 2; i < len+1; i++) {
                 if(vector[i] < (double)maxSmall * threshold) { //narrow bar
                     if(vector[i] > maxSmall) {
                         maxSmall = vector[i];
@@ -182,8 +193,9 @@ public class BarcodeProcessor {
                 }                    
                 color ^= color;
             }    
+            return resVector.toArray(new Integer[resVector.size()]);
         }
-        return resVector.toArray(new Integer[resVector.size()]);
+        return null;
     }
     
     //nicht sicher
