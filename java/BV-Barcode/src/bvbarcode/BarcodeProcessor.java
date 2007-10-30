@@ -231,8 +231,8 @@ public class BarcodeProcessor {
         int[] stopSeq   = {4,1,2};
         
         //invertierte sequenzen
-        int[] startVectorInv = new int[3];
-        int[] stopVectorInv = new int[4];
+        int[] startVectorInv = new int[4];
+        int[] stopVectorInv = new int[3];
         
         int[] startSeqInv  = {1,2,1,2};
         int[] stopSeqInv   = {2,1,4};
@@ -253,13 +253,13 @@ public class BarcodeProcessor {
             stopVector[1] = vector[len-2];
             stopVector[2] = vector[len-1];
             
-            startVectorInv[0] =  vector[0];
-            startVectorInv[1] =  vector[1];
-            startVectorInv[2] =  vector[2];
-            stopVectorInv[0] = vector[len-4];
-            stopVectorInv[1] = vector[len-3];
-            stopVectorInv[2] = vector[len-2];
-            stopVectorInv[3] = vector[len-1];
+            stopVectorInv[0] =  vector[0];
+            stopVectorInv[1] =  vector[1];
+            stopVectorInv[2] =  vector[2];
+            startVectorInv[0] = vector[len-4];
+            startVectorInv[1] = vector[len-3];
+            startVectorInv[2] = vector[len-2];
+            startVectorInv[3] = vector[len-1];
             
             
             step = 1;
@@ -281,8 +281,8 @@ public class BarcodeProcessor {
                 //codevector inverted
                 //invert step
                 step = -1;
-                loopStart = len-3;
-                loopEnd = 3;
+                loopStart = len-5;
+                loopEnd = 2;
             } else {
                 return null;
             }
