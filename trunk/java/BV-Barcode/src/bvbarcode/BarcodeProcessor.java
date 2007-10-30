@@ -16,6 +16,7 @@ import java.util.*;
  */
 public class BarcodeProcessor {
     private static BarcodeProcessor instance = null;
+    public static Img debugImg;
     
     /** Creates a new instance of BarcodeProcessor */
     protected BarcodeProcessor() {
@@ -31,7 +32,12 @@ public class BarcodeProcessor {
     public static void ImgToGrayScale(Img imgIn, Img imgOut) {       
         for (int i = 1; i < imgIn.height-1; i++) {
             for (int j = 1; j < imgIn.width-1; j++) {
-                imgOut.pix[i][j].c0 = (short)(((int)(imgIn.pix[i][j].c0 + imgIn.pix[i][j].c1 + imgIn.pix[i][j].c2))/3);
+//                imgOut.pix[i][j].c0 = (short)(((int)(imgIn.pix[i][j].c0 + imgIn.pix[i][j].c1 + imgIn.pix[i][j].c2))/3);
+                 if( (((int)(imgIn.pix[i][j].c0 + imgIn.pix[i][j].c1 + imgIn.pix[i][j].c2))/3) < 128 ){
+                     imgOut.pix[i][j].c0 = 0;
+                 }else{
+                     imgOut.pix[i][j].c0 = 255;
+                 }
             }
 	}
     }
@@ -51,7 +57,7 @@ public class BarcodeProcessor {
         Integer[] codeVector;
         Integer[] result = null;
         
-        /*Line[] lines = {    new Line((int)(w/4), 0, (int)(w/4), h),
+        Line[] lines = {    new Line((int)(w/4), 0, (int)(w/4), h),
                             new Line((int)(w/2), 0, (int)(w/2), h),
                             new Line((int)(3*w/4), 0, (int)(3*w/4), h),
                             new Line(0, (int)(h/4), w, (int)(h/4)),
@@ -62,16 +68,16 @@ public class BarcodeProcessor {
                             new Line(0, (int)(h/2), (int)(w/2), h),
                             new Line((int)(w/2), h, w, (int)(h/2)),
                             new Line(0, (int)(h/2), (int)(w/2), 1),
-                            new Line(0, h, w, 0)};*/
+                            new Line(0, h, w, 0)};
 
-        Line[] lines = {    new Line((int)(w/2), 0, (int)(w/2), h)};
+//        Line[] lines = {    new Line((int)(w/2), 0, (int)(w/2), h)};
                             
                
         
-        while(result == null && lineNr < lines.length) {
+        while( result == null && lineNr < lines.length) {
             bcVector = PixelCount(img, lines[lineNr]);
             //TODO: remove
-            System.out.println("bcVector:");
+            System.out.println("bcVector: "+bcVector.length);
             
             for(int ii=0; ii<bcVector.length; ii++)
             {
@@ -79,18 +85,20 @@ public class BarcodeProcessor {
             }
             //TODO: ------------
             
-            codeVector = GetCode(bcVector, 2.0);
+            codeVector = GetCode(bcVector, 1.8);
             
+            if(codeVector != null){
             //TODO: remove
-            System.out.println("\ncodeVector:"+codeVector.length);
-            for(int ii=0; ii<codeVector.length; ii++)
-            {
-                System.out.print(codeVector[ii].toString()+", ");
-            }
-            System.out.println("");
+                System.out.println("\ncodeVector:"+codeVector.length);
+                for(int ii=0; ii<codeVector.length; ii++)
+                {
+                    System.out.print(codeVector[ii].toString()+", ");
+                }
+                System.out.println("");
             //TODO: ------------
             
-            result = Decode(codeVector);
+                result = Decode(codeVector);
+            }
             lineNr++;
         } 
         return result;
@@ -103,7 +111,13 @@ public class BarcodeProcessor {
         int endCol = line.End.Y;
         
         int pixcount = 0;
-        short currentcolor = img.pix[nextRow][nextCol].c0;
+        int currentcolor;
+        int threshold = 80;
+        if((short)(((int)(img.pix[nextRow][nextCol].c0 + img.pix[nextRow][nextCol].c1 + img.pix[nextRow][nextCol].c2))/3) < threshold){
+            currentcolor = 0;
+        }else{
+            currentcolor = 255;
+        }
         ArrayList<Integer> bcVector = new ArrayList<Integer>();
 
         int deltaRow = endRow - nextRow;
@@ -112,6 +126,7 @@ public class BarcodeProcessor {
         int stepRow = 0;
         int currentStep = 0;
         int fraction = 0;
+        Coordinate tmp;
 
         if (deltaRow < 0) {
             stepRow = -1;
@@ -133,6 +148,11 @@ public class BarcodeProcessor {
         if (deltaCol > deltaRow ) {
             fraction = deltaRow*2-deltaCol;
             while (nextCol != endCol) {
+
+                tmp = pixcounter(img, currentcolor, nextRow, nextCol, pixcount, bcVector, threshold);
+                pixcount = tmp.X;
+                currentcolor = tmp.Y;
+                
                 if(fraction >= 0) {
                     nextRow = nextRow + stepRow;
                     fraction = fraction - deltaCol;
@@ -140,22 +160,16 @@ public class BarcodeProcessor {
                 nextCol = nextCol + stepCol;
                 fraction = fraction + deltaRow;
                 currentStep = currentStep + 1;
-
-                if(img.pix[nextRow][nextCol].c0 == currentcolor) {
-                    pixcount = pixcount + 1;
-                } else {
-                    bcVector.add(pixcount);
-                    pixcount = 1;
-                    currentcolor = img.pix[nextRow][nextCol].c0;
-                }
-                // set it white to see the scanlines 
-                // TODO: remove this line in the final version
-                img.pix[nextRow-1][nextCol].c0 = 1;
             }
             bcVector.add(pixcount);
         } else {
             fraction = deltaCol*2-deltaRow;
             while (nextRow != endRow) {
+
+                tmp = pixcounter(img, currentcolor, nextRow, nextCol, pixcount, bcVector, threshold);
+                pixcount = tmp.X;
+                currentcolor = tmp.Y;
+                
                 if (fraction >= 0) {
                     nextCol = nextCol + stepCol;
                     fraction = fraction - deltaRow;
@@ -163,22 +177,38 @@ public class BarcodeProcessor {
                 nextRow = nextRow + stepRow;
                 fraction = fraction + deltaCol;
                 currentStep = currentStep + 1;
-                
-                if(img.pix[nextRow][nextCol].c0 == currentcolor) {
-                    pixcount = pixcount + 1;
-                } else {
-                    bcVector.add(pixcount);
-                    pixcount = 1;
-                    currentcolor = img.pix[nextRow][nextCol].c0;
-                }
-                // set it white to see the scanlines 
-                // TODO: remove this line in the final version
-                img.pix[nextRow-1][nextCol].c0 = 1;
             }
             bcVector.add(pixcount);
         }
         return  bcVector.toArray(new Integer[bcVector.size()]);
     }  
+    
+    private static Coordinate pixcounter(Img imgIn, 
+                                int currentcolor, 
+                                int i,
+                                int j, 
+                                int pixcount, 
+                                ArrayList<Integer> bcVector,
+                                int threshold){
+        short actual_color;
+        if( (((int)(imgIn.pix[i][j].c0 + imgIn.pix[i][j].c1 + imgIn.pix[i][j].c2))/3) < threshold){
+            actual_color = 0;
+        }else{
+            actual_color = 255;
+        }; 
+        if(actual_color == currentcolor) {
+            pixcount = pixcount + 1;
+        } else {
+            bcVector.add(pixcount);
+            pixcount = 1;
+            currentcolor = actual_color;
+        }
+//        imgIn.pix[i][j].c0 = (short)(255-currentcolor);
+        debugImg.pix[i][j].c0 = (short)(255-currentcolor);
+        
+
+        return new Coordinate(pixcount, currentcolor);
+    }
     
     public static Integer[] GetCode(Integer[] vector, double threshold) {
         ArrayList<Integer> resVector = new ArrayList<Integer>();
@@ -187,11 +217,12 @@ public class BarcodeProcessor {
         int color;
              
         //andere bedingung.... (return erst danach) nicht schön
-        if (vector.length > 1 ) {
-            maxSmall = vector[2];
+        if (vector.length > 3 ) {
+            maxSmall = vector[1];
+            System.out.println("\nmaxSmall is: "+maxSmall);
             //temp_vec is smaller because the first and the last entrys don't belong
             //to the code
-            len = vector.length - 4; 
+            len = vector.length; 
 
             //start with black
             color = 1;  
@@ -201,10 +232,11 @@ public class BarcodeProcessor {
             //2     black narrow
             //3     white wide
             //4     black wide
-            for(int i = 2; i < len+2; i++) {
+            for(int i = 1; i < len-1; i++) {
                 if(vector[i] < (double)maxSmall * threshold) { //narrow bar
                     if(vector[i] > maxSmall) {
                         maxSmall = vector[i];
+                        System.out.println("adjusting maxSmall to: "+maxSmall);
                     }
                     resVector.add(color+1);
                 } else { //wide bar
@@ -305,11 +337,15 @@ public class BarcodeProcessor {
                 for(int i=loopStart; i != loopEnd; i+=step*2) {
                     blackNumber.add(vector[i]-1);
                     whiteNumber.add(vector[i+step]);
-                    System.out.println("black add: "+(vector[i]-1));
-                    System.out.println("white add: "+(vector[i+step]));
+//                    System.out.println("black add: "+(vector[i]-1));
+//                    System.out.println("white add: "+(vector[i+step]));
                     if(stepCount == 4) {
-                        resVector.add(CodeLookUp(blackNumber));
-                        resVector.add(CodeLookUp(whiteNumber));
+                        Integer r = CodeLookUp(blackNumber);
+                        if(r.intValue()==-1){return null;}
+                        resVector.add(r);
+                        r = CodeLookUp(whiteNumber);
+                        if(r.intValue()==-1){return null;}
+                        resVector.add(r);
                         blackNumber.clear();
                         whiteNumber.clear();
                         stepCount = 0;
