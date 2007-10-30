@@ -70,7 +70,26 @@ public class BarcodeProcessor {
         
         while(result == null && lineNr < lines.length) {
             bcVector = PixelCount(img, lines[lineNr]);
-            codeVector = GetCode(bcVector, 1.6);
+            //TODO: remove
+            System.out.println("bcVector:");
+            
+            for(int ii=0; ii<bcVector.length; ii++)
+            {
+                System.out.print(bcVector[ii].toString()+", ");
+            }
+            //TODO: ------------
+            
+            codeVector = GetCode(bcVector, 2.0);
+            
+            //TODO: remove
+            System.out.println("\ncodeVector:"+codeVector.length);
+            for(int ii=0; ii<codeVector.length; ii++)
+            {
+                System.out.print(codeVector[ii].toString()+", ");
+            }
+            System.out.println("");
+            //TODO: ------------
+            
             result = Decode(codeVector);
             lineNr++;
         } 
@@ -182,7 +201,7 @@ public class BarcodeProcessor {
             //2     black narrow
             //3     white wide
             //4     black wide
-            for(int i = 2; i < len+1; i++) {
+            for(int i = 2; i < len+2; i++) {
                 if(vector[i] < (double)maxSmall * threshold) { //narrow bar
                     if(vector[i] > maxSmall) {
                         maxSmall = vector[i];
@@ -191,7 +210,7 @@ public class BarcodeProcessor {
                 } else { //wide bar
                     resVector.add(color+3);
                 }                    
-                color ^= color;
+                color = color^1;
             }    
             return resVector.toArray(new Integer[resVector.size()]);
         }
@@ -229,7 +248,7 @@ public class BarcodeProcessor {
             startVector[0] =  vector[0];
             startVector[1] =  vector[1];
             startVector[2] =  vector[2];
-            startVector[3] =  vector[4];
+            startVector[3] =  vector[3];
             stopVector[0] = vector[len-3];
             stopVector[1] = vector[len-2];
             stopVector[2] = vector[len-1];
@@ -250,11 +269,13 @@ public class BarcodeProcessor {
             // 2     black narrow
             // 3     white wide
             // 4     black wide
-            
+            //3476_rot_0.bmp => 2,1,2,1,4,1,4,1,2,3,2,1,2,3,2,1,2,3,2,3,4,1,4,1,4,1,2
+            System.out.println("before loop setup vector len: "+len);
+
             if(Arrays.equals(startVector, startSeq) &&
                Arrays.equals(stopVector, stopSeq)) {
                 loopStart = 4;
-                loopEnd = len-4; // (-1 -3)
+                loopEnd = len-3; // (-1 -3)
             } else if (Arrays.equals(startVectorInv, startSeqInv) &&
                        Arrays.equals(stopVectorInv, stopSeqInv)) {
                 //codevector inverted
@@ -265,19 +286,30 @@ public class BarcodeProcessor {
             } else {
                 return null;
             }
-
+            //TODO: remove
+            System.out.println("loopstart: "+loopStart);
+            System.out.println("loopend: "+loopEnd);
+            System.out.println("step: "+step);
+            System.out.println("vector len: "+len);
+            System.out.println("(len-7) % 2 = "+((len-7) % 2));
+            System.out.println("");
+            System.out.println("");
+            
+            //TODO: ----------
             // start and stop sequence identified, code has equal number of digits
-            if ( (len-7 % 2) == 0) {
+            if ( ((len-7) % 2) == 0) {
                 stepCount = 0;
-
+                System.out.println("before for(loopstart to loopend");
                 // fill both w_number and b_number vectors at once by using a
                 // stepsize of 2
-                for(int i=0; i <= loopEnd; i+=step*2) {
-                    blackNumber.add(vector[i-1]);
+                for(int i=loopStart; i != loopEnd; i+=step*2) {
+                    blackNumber.add(vector[i]-1);
                     whiteNumber.add(vector[i+step]);
+                    System.out.println("black add: "+(vector[i]-1));
+                    System.out.println("white add: "+(vector[i+step]));
                     if(stepCount == 4) {
-                        resVector.add(CodeLookUp((Integer[])blackNumber.toArray()));
-                        resVector.add(CodeLookUp((Integer[])whiteNumber.toArray()));
+                        resVector.add(CodeLookUp(blackNumber));
+                        resVector.add(CodeLookUp(whiteNumber));
                         blackNumber.clear();
                         whiteNumber.clear();
                         stepCount = 0;
@@ -293,11 +325,13 @@ public class BarcodeProcessor {
         return null;
     }
     
-    public static int CodeLookUp(Integer[] number) {
+    public static int CodeLookUp(ArrayList<Integer> orignumber) {
         int N = 1;
         int W = 3;
         
-        int result;
+        Integer result;
+        Integer[] number = new Integer[orignumber.size()];
+        number = orignumber.toArray(number);
         
         
         Integer[] num0 = {N,N,W,W,N};
@@ -310,29 +344,28 @@ public class BarcodeProcessor {
         Integer[] num7 = {N,N,N,W,W};
         Integer[] num8 = {W,N,N,W,N};
         Integer[] num9 = {N,W,N,W,N};
-        
         if(Arrays.equals(number, num0)) {
-            result = 0;
+            result = Integer.valueOf(0);
         } else if(Arrays.equals(number, num1)) {
-            result = 1;
+            result = Integer.valueOf(1);
         } else if(Arrays.equals(number, num2)) {
-            result = 2;
+            result = Integer.valueOf(2);
         } else if(Arrays.equals(number, num3)) {
-            result = 3;
+            result = Integer.valueOf(3);
         } else if(Arrays.equals(number, num4)) {
-            result = 4;
+            result = Integer.valueOf(4);
         } else if(Arrays.equals(number, num5)) {
-            result = 5;
+            result = Integer.valueOf(5);
         } else if(Arrays.equals(number, num6)) {
-            result = 6;
+            result = Integer.valueOf(6);
         } else if(Arrays.equals(number, num7)) {
-            result = 7;
+            result = Integer.valueOf(7);
         } else if(Arrays.equals(number, num8)) {
-            result = 8;
+            result = Integer.valueOf(8);
         } else if(Arrays.equals(number, num9)) {
-            result = 9;
+            result = Integer.valueOf(9);
         } else {
-            result = -1;
+            result = Integer.valueOf(-1);
         }
 
         return result;

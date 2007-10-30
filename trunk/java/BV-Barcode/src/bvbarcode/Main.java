@@ -41,7 +41,10 @@ public class Main {
 	// instantiate image im1 and attach a frame grabber	
 	//Img image = new Img(new ImgGrabber("preview"));
         Img image = new Img();
-        image.read("C:\\Dokumente und Einstellungen\\kummedan\\Desktop\\BV Projekt Barcode\\matlab\\testimages\\3476_rot_0.bmp");
+        
+//        image.read("C:\\Dokumente und Einstellungen\\kummedan\\Desktop\\BV Projekt Barcode\\matlab\\testimages\\3476_rot_0.bmp");
+        image.read("C:\\Dokumente und Einstellungen\\XereX\\Eigene Dateien\\Data\\zhwin\\5.Sem\\BV\\Projekt\\Barcode\\SVN_google_Barcode\\matlab\\testimages\\3476_rot_0.bmp");
+        
         Img grayImage = new Img(image.width, image.height, Img.GRAY);
         Img binImage  = new Img(image.width, image.height, Img.BINARY);
 	//image.grabFrame();
