@@ -19,10 +19,12 @@ public class Main {
     
     private static String parseResult(Integer[] res) {
         StringBuilder s = new StringBuilder();
-        if(res != null && res.length > 0) {
+        //super 3v1| hack, god killd thousand kittens 'cause of this... (3)
+        if(res != null && res.length > 3) {
             for(int i = 0; i < res.length; i++) {
                 s.append(res[i]);
             }
+            java.awt.Toolkit.getDefaultToolkit().beep();
         } else {
             s.append("nothing found");
         }        
@@ -67,7 +69,7 @@ public class Main {
                 
 //                binImage.gray2bin(128);
                 bc.debugImg.copy(image);
-                bc.debugImg.rgb2bin(80);
+                bc.debugImg.rgb2bin(100);
                 
                 result = bc.ReadBarCode(image);
                 textDisp.displayText(parseResult(result));
