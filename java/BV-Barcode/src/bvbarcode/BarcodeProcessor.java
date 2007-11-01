@@ -112,7 +112,7 @@ public class BarcodeProcessor {
         
         int pixcount = 0;
         int currentcolor;
-        int threshold = 80;
+        int threshold = 100;
         if((short)(((int)(img.pix[nextRow][nextCol].c0 + img.pix[nextRow][nextCol].c1 + img.pix[nextRow][nextCol].c2))/3) < threshold){
             currentcolor = 0;
         }else{
@@ -216,8 +216,11 @@ public class BarcodeProcessor {
         int len;
         int color;
              
-        //andere bedingung.... (return erst danach) nicht schön
-        if (vector.length > 3 ) {
+        // Bedingung für gültigen Code
+        // 2 linien aussen fallen weg
+        // 4 start und 3 stopplinien
+        // 1 zeichen = 5 linien
+        if (vector.length >= 14 ) {
             maxSmall = vector[1];
             System.out.println("\nmaxSmall is: "+maxSmall);
             //temp_vec is smaller because the first and the last entrys don't belong
