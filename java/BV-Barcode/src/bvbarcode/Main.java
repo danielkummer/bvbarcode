@@ -17,7 +17,7 @@ public class Main {
     
     private static BarcodeProcessor bc;
     
-    private static String parseResult(Integer[] res) {
+    private static String parseResult(int[] res) {
         StringBuilder s = new StringBuilder();
         //super 3v1| hack, god killd thousand kittens 'cause of this... (3)
         if(res != null && res.length > 3) {
@@ -35,7 +35,7 @@ public class Main {
     public static void main(String[] args) {
         boolean running = true;
         
-        Integer[] result = null;
+        int[] result = null;
 
         bc = BarcodeProcessor.getInstance();
         
@@ -68,15 +68,15 @@ public class Main {
 //                grayImage.display();
                 
 //                binImage.gray2bin(128);
-                bc.debugImg.copy(image);
-                bc.debugImg.rgb2bin(100);
+//                bc.debugImg.copy(image);
+//                bc.debugImg.rgb2bin(100);
                 
                 result = bc.ReadBarCode(image);
                 textDisp.displayText(parseResult(result));
                 
 //                image.display();
 //                binImage.display();
-                bc.debugImg.display();
+//                bc.debugImg.display();
                 
                 //image.read("C:\\Dokumente und Einstellungen\\kummedan\\Desktop\\BV Projekt Barcode\\matlab\\testimages\\3476_rot_0.bmp");
 	}
